@@ -1,5 +1,13 @@
 # Simple autocomplete and category lookup program
 
+"""Demo script for looking up skincare categories.
+
+This script provides a small command line interface that lets the user type
+a prefix, see autocomplete suggestions, and view details about a category. It
+demonstrates a simple use of Python data structures and binary search for
+efficient prefix matching.
+"""
+
 categories = {
     "moisturizers": {
         "description": "Hydrating products that lock in moisture and improve skin barrier function.",
@@ -44,14 +52,24 @@ categories = {
 }
 
 
+from bisect import bisect_left, bisect_right
+
+
+# Pre-compute sorted list of category names for binary search.
+category_names = sorted(categories.keys())
+
+
 def autocomplete(prefix):
-    """Return list of categories that start with the given prefix (case-insensitive)."""
+    """Return a list of categories that start with ``prefix`` (case-insensitive)."""
     prefix = prefix.lower()
-    return [name for name in categories.keys() if name.startswith(prefix)]
+    start = bisect_left(category_names, prefix)
+    # Use a high unicode char to find the end of the prefix range
+    end = bisect_right(category_names, prefix + "\uffff")
+    return category_names[start:end]
 
 
 def show_category_data(category):
-    """Display information for the selected category if it exists."""
+    """Display information for ``category`` if it exists."""
     data = categories.get(category.lower())
     if not data:
         print(f"No data found for category '{category}'.")
@@ -65,6 +83,7 @@ def show_category_data(category):
 
 
 def main():
+    """Entry point for the command line program."""
     print("Welcome to the skincare category lookup!")
     while True:
         prefix = input("\nEnter a search term (or 'quit' to exit): ")
