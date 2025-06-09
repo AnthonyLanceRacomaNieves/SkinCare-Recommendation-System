@@ -61,7 +61,9 @@ category_names = sorted(categories.keys())
 
 def autocomplete(prefix):
     """Return a list of categories that start with ``prefix`` (case-insensitive)."""
-    prefix = prefix.lower()
+    prefix = prefix.strip().lower()
+    if not prefix:
+        return []
     start = bisect_left(category_names, prefix)
     # Use a high unicode char to find the end of the prefix range
     end = bisect_right(category_names, prefix + "\uffff")
@@ -70,7 +72,7 @@ def autocomplete(prefix):
 
 def show_category_data(category):
     """Display information for ``category`` if it exists."""
-    data = categories.get(category.lower())
+    data = categories.get(category.strip().lower())
     if not data:
         print(f"No data found for category '{category}'.")
         return
